@@ -1,3 +1,5 @@
+import math
+
 import numpy
 from .base_module import BaseModule
 import cv2
@@ -55,6 +57,21 @@ class Layout(BaseModule):
             points.append((int(x), int(y)) if conf > 0.2 else None)
 
         print(points)
+        # 考虑将哪两个点(多种选择)之间的连线作为人体的连线
+        nose_point = points[BODY_PARTS["Nose"]]
+        lHip_point = points[BODY_PARTS["LHip"]]
+        print("Nose", nose_point)
+        print("LHip", lHip_point)
+        if nose_point and lHip_point:
+            x_nose = nose_point[0]
+            y_nose = nose_point[1]
+            x_LHip = lHip_point[0]
+            y_LHip = lHip_point[1]
+            # 返回上面角的度数
+            angle = math.atan2(abs(x_nose - x_LHip), abs(y_nose - y_LHip)) * 180 / math.pi
+            print("angle: {:.2f}°".format(angle))
+        else:
+            print("无法计算人体倾斜的角度")
 
         # 划线
         for pair in POSE_PAIRS:
@@ -71,6 +88,10 @@ class Layout(BaseModule):
                 cv2.ellipse(img, points[id_from], (3, 3), 0, 0, 360, (0, 0, 255), cv2.FILLED)
                 cv2.ellipse(img, points[id_to], (3, 3), 0, 0, 360, (0, 0, 255), cv2.FILLED)
 
+        height, width = img.shape[:2]
+        # 设置窗口大小可调
+        cv2.namedWindow("image", cv2.WINDOW_KEEPRATIO)
+        cv2.resizeWindow('image', width, height)
         cv2.imshow('image', img)
         cv2.waitKey(0)
         cv2.destroyAllWindows()

@@ -1,12 +1,15 @@
 import cv2
 import math
 import numpy
+import torch
+import os
+import numpy as np
 from matplotlib import pyplot as plt
 
 
 class Utils:
 
-    pose_net = cv2.dnn.readNetFromTensorflow('modules/graph_opt.pb')
+    # pose_net = cv2.dnn.readNetFromTensorflow('modules/graph_opt.pb')
     points = []
     BODY_PARTS = {"Nose": 0, "Neck": 1, "RShoulder": 2, "RElbow": 3, "RWrist": 4,
                   "LShoulder": 5, "LElbow": 6, "LWrist": 7, "RHip": 8, "RKnee": 9,
@@ -70,3 +73,13 @@ class Utils:
         cv2.destroyAllWindows()
 
         return points
+
+    """
+        使用Real-time的模型完成人像分离
+    """
+    @classmethod
+    def separate_character(cls):
+        pass
+
+if __name__ == '__main__':
+    Utils.separate_character()

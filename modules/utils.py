@@ -5,6 +5,7 @@ import torch
 import os
 import numpy as np
 from matplotlib import pyplot as plt
+from portraitNet.pred_img import portraitSeg
 
 
 class Utils:
@@ -78,8 +79,13 @@ class Utils:
         使用Real-time的模型完成人像分离
     """
     @classmethod
-    def separate_character(cls):
-        pass
+    def separate_character(cls, imgFile):
+        alphargb, human, background, human_blur_background = portraitSeg(imgFile)
+        # 显示分割出的人像和背景
+        cv2.imshow("human", human)
+        cv2.imshow("background", background)
+        cv2.imshow("human_blur_background", human_blur_background)
+        cv2.waitKey(0)
 
 if __name__ == '__main__':
-    Utils.separate_character()
+    Utils.separate_character(imgFile="../imgs/middle-tilt.jpg")

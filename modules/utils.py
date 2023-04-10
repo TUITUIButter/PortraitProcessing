@@ -10,7 +10,7 @@ from portraitNet.pred_img import portraitSeg
 
 class Utils:
 
-    # pose_net = cv2.dnn.readNetFromTensorflow('modules/graph_opt.pb')
+    pose_net = cv2.dnn.readNetFromTensorflow('modules/graph_opt.pb')
     points = []
     BODY_PARTS = {"Nose": 0, "Neck": 1, "RShoulder": 2, "RElbow": 3, "RWrist": 4,
                   "LShoulder": 5, "LElbow": 6, "LWrist": 7, "RHip": 8, "RKnee": 9,

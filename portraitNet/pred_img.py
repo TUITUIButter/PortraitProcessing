@@ -61,10 +61,10 @@ def pred_single(model, exp_args, img_ori, prior=None):
     in_ = in_[np.newaxis, :, :, :]  # 加一个维度
 
     if exp_args.addEdge == True:
-        output_mask, output_edge = model(Variable(torch.from_numpy(in_)).cuda())
+        output_mask, output_edge = model(Variable(torch.from_numpy(in_)).to(device))
         # output_mask, output_edge = model(torch.from_numpy(in_))
     else:
-        output_mask = model(Variable(torch.from_numpy(in_)).cuda())
+        output_mask = model(Variable(torch.from_numpy(in_)).to(device))
         # output_mask = model(torch.from_numpy(in_))
     prob = softmax(output_mask)
     pred = prob.data.cpu().numpy()
@@ -119,6 +119,7 @@ exp_args.useUpsample = cf['useUpsample']
 # if exp_args.useDeconvGroup==True, set groups=input_channel in nn.ConvTranspose2d
 exp_args.useDeconvGroup = cf['useDeconvGroup']
 
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 def portraitSeg(imgFile: str):
     """
@@ -137,7 +138,7 @@ def portraitSeg(imgFile: str):
                                           channelRatio=1.0,
                                           minChannel=16,
                                           weightInit=True,
-                                          video=exp_args.video).cuda()
+                                          video=exp_args.video).to(device=device)
     bestModelFile = os.path.join(abspath, 'checkpoints', 'mobilenetv2_total_with_prior_channel.tar')
     if os.path.isfile(bestModelFile):
         checkpoint_video = torch.load(bestModelFile, encoding='latin1')

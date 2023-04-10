@@ -141,7 +141,10 @@ def portraitSeg(imgFile: str):
                                           video=exp_args.video).to(device=device)
     bestModelFile = os.path.join(abspath, 'checkpoints', 'mobilenetv2_total_with_prior_channel.tar')
     if os.path.isfile(bestModelFile):
-        checkpoint_video = torch.load(bestModelFile, encoding='latin1')
+        if torch.cuda.is_available():
+            checkpoint_video = torch.load(bestModelFile, encoding='latin1')
+        else:
+            checkpoint_video = torch.load(bestModelFile, encoding='latin1', map_location=torch.device('cpu'))
         netmodel_video.load_state_dict(checkpoint_video['state_dict'])
         print("minLoss: ", checkpoint_video['minLoss'], checkpoint_video['epoch'])
         print("=> loaded checkpoint '{}' (epoch {})".format(bestModelFile, checkpoint_video['epoch']))

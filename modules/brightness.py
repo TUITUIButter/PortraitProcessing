@@ -1,22 +1,43 @@
 import numpy
 from .utils import Utils
 from .base_module import BaseModule
+import numpy as np
+import cv2
 
 
 class Brightness(BaseModule):
-    def cal_score(self, img) -> float:
-        dark_threshold = 0.6
-        bright_threshold = 0.3
+    def __init__(self):
+        self.dark_prop, self.bright_prop = 0, 0
+        self.dark_threshold = 0.6
+        self.bright_threshold = 0.3
 
-        dark_prop, bright_prop = Utils.brightness_detection(img)
+    def cal_score(self, img) -> float:
+        self.dark_prop, self.bright_prop = Utils.brightness_detection(img)
         score = 10
-        if dark_prop >= dark_threshold:  # 整体环境黑暗的图片
-            score -= (dark_prop - dark_threshold) / (1 - dark_threshold) * 10.0
-        elif bright_prop >= 0.3:
-            score -= (bright_prop - bright_threshold) / (1 - bright_threshold) * 10.0
+        if self.dark_prop >= self.dark_threshold:  # 整体环境黑暗的图片
+            score -= (self.dark_prop - self.dark_threshold) / (1 - self.dark_threshold) * 10.0
+        elif self.bright_prop >= 0.3:
+            score -= (self.bright_prop - self.bright_threshold) / (1 - self.bright_threshold) * 10.0
 
         print("brightness score: {:.2f}".format(score))
         return score
 
     def opt_img(self, img) -> numpy.ndarray:
-        pass
+        if self.dark_prop >= self.dark_threshold:  # 整体环境黑暗的图片
+            gamma = self.dark_prop - self.dark_threshold + 1.2
+        elif self.bright_prop >= 0.3:
+            gamma = 0.9 - (self.bright_prop - self.bright_threshold)
+        else:
+            gamma = 1
+        print("adjust gamma:" + str(gamma))
+        return adjust_gamma(img, gamma)
+
+
+def adjust_gamma(image, gamma=1.0):
+    # 构建一个0到255的灰度值映射表
+    invGamma = 1.0 / gamma
+    table = np.array([((i / 255.0) ** invGamma) * 255
+                      for i in np.arange(0, 256)]).astype("uint8")
+
+    # 应用映射表，返回调整后的图像
+    return cv2.LUT(image, table)

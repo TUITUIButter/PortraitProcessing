@@ -144,4 +144,4 @@ class Utils:
 if __name__ == '__main__':
     # Utils.separate_character(imgFile="../imgs/middle-tilt.jpg")
     # 可以测试01，01dark，02，02dark，03，03bright
-    Utils.brightness_detection(cv2.imread("../imgs/01dark.png"))
+    Utils.brightness_detection(cv2.imread("../imgs/03.jpg"))

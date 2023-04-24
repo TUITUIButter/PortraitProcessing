@@ -30,7 +30,8 @@ class Brightness(BaseModule):
         else:
             gamma = 1
         print("adjust gamma:" + str(gamma))
-        return adjust_gamma(img, gamma)
+        img = adjust_gamma(img, gamma)
+        return img
 
 
 def adjust_gamma(image, gamma=1.0):

@@ -16,6 +16,7 @@ sys.path.insert(0, '../data/')
 
 from portraitNet.data_aug import Normalize_Img, Anti_Normalize_Img
 
+
 def resize_padding(image, dstshape, padValue=0):
     height, width, _ = image.shape
     ratio = float(width) / height  # ratio = (width:height)

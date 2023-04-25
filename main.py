@@ -15,6 +15,7 @@ assert image is not None
 # layout = Layout('./modules/graph_opt.pb')
 # layout.cal_score(image)
 
+# 调整亮度
 brightness = Brightness()
 brightness.cal_score(image)
 
@@ -22,6 +23,7 @@ cv2.namedWindow('Original', cv2.WINDOW_KEEPRATIO)    # 窗口大小可以改变
 cv2.imshow("Original", image)
 adjusted = brightness.opt_img(image)
 
+# 计算图像的饱和度
 saturation = Saturation()
 saturation.cal_score(adjusted)
 adjusted = saturation.opt_img(adjusted)

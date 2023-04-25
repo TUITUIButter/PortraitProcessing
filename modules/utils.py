@@ -6,11 +6,12 @@ import os
 import numpy as np
 from matplotlib import pyplot as plt
 from portraitNet.pred_img import portraitSeg
+from Neural_IMage_Assessment.NIMA import eval_pic_by_NIMA
 
+abspath = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 class Utils:
-
-    pose_net = cv2.dnn.readNetFromTensorflow('modules/graph_opt.pb')
+    pose_net = cv2.dnn.readNetFromTensorflow(os.path.join(abspath, 'modules', 'graph_opt.pb'))
     points = []
     BODY_PARTS = {"Nose": 0, "Neck": 1, "RShoulder": 2, "RElbow": 3, "RWrist": 4,
                   "LShoulder": 5, "LElbow": 6, "LWrist": 7, "RHip": 8, "RKnee": 9,
@@ -88,6 +89,20 @@ class Utils:
         cv2.waitKey(0)
 
     """
+        读取图片并对图片进行质量评估
+        返回一个(-1, 10)的值 值越大代表质量越好
+        Args:
+            imgFile: 输入图片的路径
+        Returns:
+            mean: 平均值 (代表图像的评分)
+            std: 方差
+    """
+    @classmethod
+    def eval_pic(cls, imgFile):
+        mean, std = eval_pic_by_NIMA(imgFile)
+        return mean, std
+
+    """
         亮度检测
     """
     @classmethod
@@ -145,3 +160,6 @@ if __name__ == '__main__':
     # Utils.separate_character(imgFile="../imgs/middle-tilt.jpg")
     # 可以测试01，01dark，02，02dark，03，03bright
     Utils.brightness_detection(cv2.imread("../imgs/03.jpg"))
+    # 使用NIMA评估图像的质量
+    mean, std = Utils.eval_pic("../imgs/03.jpg")
+    print(' mean: %.3f | std: %.3f' % (mean, std))

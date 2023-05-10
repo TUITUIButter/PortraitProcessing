@@ -63,5 +63,7 @@ def eval_pic_by_NIMA(img_path: str, checkpoint_path=checkpoint_path):
     # print(' mean: %.3f | std: %.3f' % (mean, std))
     return mean, std
 
+
 if __name__ == '__main__':
-    eval_pic_by_NIMA(os.path.join(abspath, 'imgs', '01.PNG'))
+    mean, std = eval_pic_by_NIMA(os.path.join(abspath, 'imgs', '01.PNG'))
+    print(mean, std)

@@ -49,15 +49,15 @@ def get_position_single(img, points):
     nose_point = points[Utils.BODY_PARTS["Nose"]]
     if not nose_point:  # 找不到鼻子，那这个肯定不好
         head_score = 2
-    x_nose = nose_point[0]
-    y_nose = nose_point[1]
-
-    if y_nose / h < 0.15:  # 头过于考上，比值小于0.15
-        head_score = 3
-    if y_nose / h > 0.6:  # 整个身子都下图片的下半方
-        head_score = 2
     else:
-        head_score = 10
+        y_nose = nose_point[1]
+
+        if y_nose / h < 0.15:  # 头过于靠上，比值小于0.15
+            head_score = 3
+        elif y_nose / h > 0.7:  # 整个身子都下图片的下半方
+            head_score = 2
+        else:
+            head_score = 10
 
     # 计算所有点的中心当作身体重心，查看身体的位置
     av_x = 0
@@ -102,9 +102,9 @@ class Layout(BaseModule):
 
     def cal_score(self, img) -> float:
         points = Utils.get_pose_point(img)
-        get_pose_single(points)
-        get_position_single(img, points)
-        return 0
+        angle_score = get_pose_single(points)
+        position_score = get_position_single(img, points)
+        return (angle_score + position_score) / 2
 
     def opt_img(self, img) -> numpy.ndarray:
         res = [1, 2, 3]

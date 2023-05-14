@@ -27,6 +27,7 @@ saturation = Saturation()
 saturation_score = saturation.cal_score(adjusted)  # 饱和度得分
 adjusted = saturation.opt_img(adjusted)  # 调整饱和度
 
+# TODO 添加抠图与虚化，虚化效果小一点
 
 total_score = layout_score + brightness_score + saturation_score
 # TODO 加上AI打分

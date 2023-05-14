@@ -66,13 +66,13 @@ class Utils:
                 cv2.ellipse(img, points[id_from], (3, 3), 0, 0, 360, (0, 0, 255), cv2.FILLED)
                 cv2.ellipse(img, points[id_to], (3, 3), 0, 0, 360, (0, 0, 255), cv2.FILLED)
 
-        height, width = img.shape[:2]
-        # 设置窗口大小可调
-        cv2.namedWindow("image", cv2.WINDOW_KEEPRATIO)
-        cv2.resizeWindow('image', width, height)
-        cv2.imshow('image', img)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
+        # height, width = img.shape[:2]
+        # # 设置窗口大小可调
+        # cv2.namedWindow("image", cv2.WINDOW_KEEPRATIO)
+        # cv2.resizeWindow('image', width, height)
+        # cv2.imshow('image', img)
+        # cv2.waitKey(0)
+        # cv2.destroyAllWindows()
 
         return points
 

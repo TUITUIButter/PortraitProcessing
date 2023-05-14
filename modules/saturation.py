@@ -34,6 +34,7 @@ class Saturation(BaseModule):
             return 10 - (contrast - self.high_threshold) * 10
         else:
             print('图像对比度适中')
+            return 10
 
     # 修改图像的饱和度,saturation_scale>0, <1降低对比度,>1提升对比度 建议0-2
     def opt_img(self, img) -> numpy.ndarray:

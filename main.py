@@ -24,9 +24,14 @@ adjusted = brightness.opt_img(image)  # 调整亮度
 
 # 饱和度
 saturation = Saturation()
-saturation.cal_score(adjusted)  # 饱和度得分
+saturation_score = saturation.cal_score(adjusted)  # 饱和度得分
 adjusted = saturation.opt_img(adjusted)  # 调整饱和度
 
+
+total_score = layout_score + brightness_score + saturation_score
+# TODO 加上AI打分
+
+print(total_score)
 
 cv2.namedWindow('Original', cv2.WINDOW_KEEPRATIO)    # 窗口大小可以改变
 cv2.imshow("Original", image)

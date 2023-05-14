@@ -1,11 +1,12 @@
 from modules.layout import Layout
 from modules.brightness import Brightness
 from modules.saturation import Saturation
+from modules.utils import Utils
 import cv2
 
 # image = cv2.imread('./imgs/test.png')  # angle: 5.57°
-# image = cv2.imread("./imgs/middle-tilt.jpg")  # 倾斜的图片 angle: 25.91°
-image = cv2.imread("./imgs/02dark.png")  # angle: 5.38°
+image = cv2.imread("./imgs/middle-tilt.jpg")  # 倾斜的图片 angle: 25.91°
+# image = cv2.imread("./imgs/02dark.png")  # angle: 5.38°
 # image = cv2.imread("./imgs/cloudy.jpg")  # angle: 5.38°
 # image = cv2.imread("./imgs/good-001.JPG")  # 找不到LHip这个点
 # image = cv2.imread("./imgs/good-002.JPG")  # 背影无法定位
@@ -28,9 +29,13 @@ saturation_score = saturation.cal_score(adjusted)  # 饱和度得分
 adjusted = saturation.opt_img(adjusted)  # 调整饱和度
 
 # TODO 添加抠图与虚化，虚化效果小一点
+# 人物分离与背景虚化
+alphargb, human, background, human_blur_background = Utils.separate_character(imgFile=None, imgOri=adjusted)
+adjusted = human_blur_background
 
 total_score = layout_score + brightness_score + saturation_score
 # TODO 加上AI打分
+
 
 print(total_score)
 

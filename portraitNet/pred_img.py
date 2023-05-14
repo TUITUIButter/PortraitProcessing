@@ -122,10 +122,11 @@ exp_args.useDeconvGroup = cf['useDeconvGroup']
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-def portraitSeg(imgFile: str):
+def portraitSeg(imgFile: str, imgOri):
     """
     实时人像分离接口
     :param imgFile: 输入图像的地址 - 字符串类型传入
+           imgOri: 如果imgFile为None, 则传入输入由cv2读取的图像
     :return: 返回四个结果，分别是
             1. 返回分割的人像的mask
             2. 分割出的人像 - 3通道
@@ -152,7 +153,10 @@ def portraitSeg(imgFile: str):
     else:
         print("=> no checkpoint found at '{}'".format(bestModelFile))
     # 从输入路径中读取图片
-    img_ori = cv2.imread(imgFile)
+    if imgFile:
+        img_ori = cv2.imread(imgFile)
+    else:
+        img_ori = imgOri
 
     prior = None
     alphargb, pred = pred_single(netmodel_video, exp_args, img_ori, prior)

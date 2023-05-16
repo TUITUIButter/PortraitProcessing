@@ -4,6 +4,7 @@ from modules.saturation import Saturation
 from modules.utils import Utils
 from SCUNet.scunet import Denoising
 from Neural_IMage_Assessment.NIMA import NIMA_predict
+from portraitNet.pred_img import PortraitSeg
 import cv2
 
 path = "./imgs/middle-tilt.jpg"  # 倾斜的图片 angle: 25.91°
@@ -24,6 +25,7 @@ brightness = Brightness()
 saturation = Saturation()
 denoising = Denoising()
 NIMA_predict = NIMA_predict()
+portraitSeg = PortraitSeg()
 
 
 
@@ -41,7 +43,7 @@ adjusted = brightness.opt_img(image)  # 调整亮度
 adjusted = saturation.opt_img(adjusted)  # 调整饱和度
 
 # 人物分离与背景虚化
-alphargb, human, background, human_blur_background = Utils.separate_character(imgFile=None, imgOri=adjusted)
+alphargb, human, background, human_blur_background = portraitSeg.portraitSeg(imgFile=None, imgOri=adjusted)
 adjusted = human_blur_background
 
 denoising.run(adjusted)  # 最后一步去噪，回保存到res.jpg

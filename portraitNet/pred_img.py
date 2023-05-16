@@ -51,30 +51,6 @@ def generate_input(exp_args, inputs, prior=None):
     return np.array(inputs, dtype=np.float32)
 
 
-def pred_single(model, exp_args, img_ori, prior=None):
-    model.eval()
-    softmax = nn.Softmax(dim=1)
-
-    in_shape = img_ori.shape
-    img, bbx = resize_padding(img_ori, [exp_args.input_height, exp_args.input_width], padValue=exp_args.padding_color)
-
-    in_ = generate_input(exp_args, img, prior)
-    in_ = in_[np.newaxis, :, :, :]  # 加一个维度
-
-    if exp_args.addEdge == True:
-        output_mask, output_edge = model(Variable(torch.from_numpy(in_)).to(device))
-        # output_mask, output_edge = model(torch.from_numpy(in_))
-    else:
-        output_mask = model(Variable(torch.from_numpy(in_)).to(device))
-        # output_mask = model(torch.from_numpy(in_))
-    prob = softmax(output_mask)
-    pred = prob.data.cpu().numpy()
-
-    predimg = pred[0].transpose((1, 2, 0))[:, :, 1]
-    out = predimg[bbx[1]:bbx[3], bbx[0]:bbx[2]]
-    out = cv2.resize(out, (in_shape[1], in_shape[0]))
-    return out, predimg
-
 # 获取绝对路径
 abspath = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 config_path = os.path.join(abspath, "portraitNet", "model_mobilenetv2_with_prior_channel.yaml")
@@ -122,57 +98,88 @@ exp_args.useDeconvGroup = cf['useDeconvGroup']
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-def portraitSeg(imgFile: str, imgOri):
-    """
-    实时人像分离接口
-    :param imgFile: 输入图像的地址 - 字符串类型传入
-           imgOri: 如果imgFile为None, 则传入输入由cv2读取的图像
-    :return: 返回四个结果，分别是
-            1. 返回分割的人像的mask
-            2. 分割出的人像 - 3通道
-            3. 将人物分割掉的背景
-            4. 将图片进行背景虚化的结果
-    """
-    netmodel_video = modellib.MobileNetV2(n_class=2,
-                                          useUpsample=exp_args.useUpsample,
-                                          useDeconvGroup=exp_args.useDeconvGroup,
-                                          addEdge=exp_args.addEdge,
-                                          channelRatio=1.0,
-                                          minChannel=16,
-                                          weightInit=True,
-                                          video=exp_args.video).to(device=device)
-    bestModelFile = os.path.join(abspath, 'checkpoints', 'mobilenetv2_total_with_prior_channel.tar')
-    if os.path.isfile(bestModelFile):
-        if torch.cuda.is_available():
-            checkpoint_video = torch.load(bestModelFile, encoding='latin1')
+class PortraitSeg:
+    def __init__(self):
+        self.netmodel_video = modellib.MobileNetV2(n_class=2,
+                                              useUpsample=exp_args.useUpsample,
+                                              useDeconvGroup=exp_args.useDeconvGroup,
+                                              addEdge=exp_args.addEdge,
+                                              channelRatio=1.0,
+                                              minChannel=16,
+                                              weightInit=True,
+                                              video=exp_args.video).to(device=device)
+        bestModelFile = os.path.join(abspath, 'checkpoints', 'mobilenetv2_total_with_prior_channel.tar')
+        if os.path.isfile(bestModelFile):
+            if torch.cuda.is_available():
+                checkpoint_video = torch.load(bestModelFile, encoding='latin1')
+            else:
+                checkpoint_video = torch.load(bestModelFile, encoding='latin1', map_location=torch.device('cpu'))
+            self.netmodel_video.load_state_dict(checkpoint_video['state_dict'])
+            print("minLoss: ", checkpoint_video['minLoss'], checkpoint_video['epoch'])
+            print("=> loaded checkpoint '{}' (epoch {})".format(bestModelFile, checkpoint_video['epoch']))
         else:
-            checkpoint_video = torch.load(bestModelFile, encoding='latin1', map_location=torch.device('cpu'))
-        netmodel_video.load_state_dict(checkpoint_video['state_dict'])
-        print("minLoss: ", checkpoint_video['minLoss'], checkpoint_video['epoch'])
-        print("=> loaded checkpoint '{}' (epoch {})".format(bestModelFile, checkpoint_video['epoch']))
-    else:
-        print("=> no checkpoint found at '{}'".format(bestModelFile))
-    # 从输入路径中读取图片
-    if imgFile:
-        img_ori = cv2.imread(imgFile)
-    else:
-        img_ori = imgOri
+            print("=> no checkpoint found at '{}'".format(bestModelFile))
 
-    prior = None
-    alphargb, pred = pred_single(netmodel_video, exp_args, img_ori, prior)
-    # 显示mask
-    plt.imshow(alphargb)
-    plt.show()
-    # 将一个通道的mask变成三个通道的
-    alphargb = cv2.cvtColor(alphargb, cv2.COLOR_GRAY2BGR)
-    # 分割出的人像
-    img_copy = img_ori.copy()
-    human = np.uint8(img_ori * alphargb + 0 * (1 - alphargb))  # 分割出的人像 - 3通道
-    background = np.uint8(img_ori * 0 + img_copy * (1 - alphargb))  # 去除人的背景 - 3通道
-    blur_background = cv2.blur(img_copy, (5, 5))
-    # 背景虚化的拼接图
-    human_blur_background = np.uint8(img_ori * alphargb + blur_background * (1 - alphargb))
-    return alphargb, human, background, human_blur_background
+    def portraitSeg(self, imgFile: str, imgOri):
+        """
+        实时人像分离接口
+        :param imgFile: 输入图像的地址 - 字符串类型传入
+               imgOri: 如果imgFile为None, 则传入输入由cv2读取的图像
+        :return: 返回四个结果，分别是
+                1. 返回分割的人像的mask
+                2. 分割出的人像 - 3通道
+                3. 将人物分割掉的背景
+                4. 将图片进行背景虚化的结果
+        """
 
-if __name__ == '__main__':
-    portraitSeg('../imgs/middle-tilt.jpg')
+        # 从输入路径中读取图片
+        if imgFile:
+            img_ori = cv2.imread(imgFile)
+        else:
+            img_ori = imgOri
+
+        prior = None
+        alphargb, pred = self.pred_single(exp_args, img_ori, prior)
+        # 显示mask
+        # plt.imshow(alphargb)
+        # plt.show()
+        # 将一个通道的mask变成三个通道的
+        alphargb = cv2.cvtColor(alphargb, cv2.COLOR_GRAY2BGR)
+        # 分割出的人像
+        img_copy = img_ori.copy()
+        human = np.uint8(img_ori * alphargb + 0 * (1 - alphargb))  # 分割出的人像 - 3通道
+        background = np.uint8(img_ori * 0 + img_copy * (1 - alphargb))  # 去除人的背景 - 3通道
+        blur_background = cv2.blur(img_copy, (5, 5))
+        # 背景虚化的拼接图
+        human_blur_background = np.uint8(img_ori * alphargb + blur_background * (1 - alphargb))
+        return alphargb, human, background, human_blur_background
+
+    def pred_single(self, exp_args, img_ori, prior=None):
+        self.netmodel_video.eval()
+        softmax = nn.Softmax(dim=1)
+
+        in_shape = img_ori.shape
+        img, bbx = resize_padding(img_ori, [exp_args.input_height, exp_args.input_width],
+                                  padValue=exp_args.padding_color)
+
+        in_ = generate_input(exp_args, img, prior)
+        in_ = in_[np.newaxis, :, :, :]  # 加一个维度
+
+        if exp_args.addEdge == True:
+            output_mask, output_edge = self.netmodel_video(Variable(torch.from_numpy(in_)).to(device))
+            # output_mask, output_edge = model(torch.from_numpy(in_))
+        else:
+            output_mask = self.netmodel_video(Variable(torch.from_numpy(in_)).to(device))
+            # output_mask = model(torch.from_numpy(in_))
+        prob = softmax(output_mask)
+        pred = prob.data.cpu().numpy()
+
+        predimg = pred[0].transpose((1, 2, 0))[:, :, 1]
+        out = predimg[bbx[1]:bbx[3], bbx[0]:bbx[2]]
+        out = cv2.resize(out, (in_shape[1], in_shape[0]))
+        return out, predimg
+
+# if __name__ == '__main__':
+#     portraitSeg = PortraitSeg()
+#     a = portraitSeg.portraitSeg('../imgs/middle-tilt.jpg', None)
+#     print(a)

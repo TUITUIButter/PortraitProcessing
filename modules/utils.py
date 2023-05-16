@@ -5,7 +5,6 @@ import torch
 import os
 import numpy as np
 from matplotlib import pyplot as plt
-from portraitNet.pred_img import portraitSeg
 
 abspath = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -74,21 +73,6 @@ class Utils:
         # cv2.destroyAllWindows()
 
         return points
-
-    """
-        使用Real-time的模型完成人像分离
-    """
-    @classmethod
-    def separate_character(cls, imgFile, imgOri):
-        alphargb, human, background, human_blur_background = portraitSeg(imgFile, imgOri)
-        '''
-            # 显示分割出的人像和背景
-            cv2.imshow("human", human)
-            cv2.imshow("background", background)
-            cv2.imshow("human_blur_background", human_blur_background)
-            cv2.waitKey(0)
-        '''
-        return alphargb, human, background, human_blur_background
 
     """
         亮度检测

@@ -6,7 +6,6 @@ import os
 import numpy as np
 from matplotlib import pyplot as plt
 from portraitNet.pred_img import portraitSeg
-from Neural_IMage_Assessment.NIMA import eval_pic_by_NIMA
 
 abspath = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -90,20 +89,6 @@ class Utils:
             cv2.waitKey(0)
         '''
         return alphargb, human, background, human_blur_background
-
-    """
-        读取图片并对图片进行质量评估
-        返回一个(-1, 10)的值 值越大代表质量越好
-        Args:
-            imgFile: 输入图片的路径
-        Returns:
-            mean: 平均值 (代表图像的评分)
-            std: 方差
-    """
-    @classmethod
-    def eval_pic(cls, imgFile):
-        mean, std = eval_pic_by_NIMA(imgFile)
-        return mean, std
 
     """
         亮度检测

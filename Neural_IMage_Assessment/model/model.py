@@ -8,12 +8,15 @@ NIMA is released under the MIT license. See LICENSE for the fill license text.
 
 import torch
 import torch.nn as nn
+import torchvision.models as models
 
 class NIMA(nn.Module):
 
     """Neural IMage Assessment model by Google"""
-    def __init__(self, base_model, num_classes=10):
+    def __init__(self, num_classes=10):
         super(NIMA, self).__init__()
+        # base_model设置为vgg16
+        base_model = models.vgg16(pretrained=True)
         # base_model就是vgg16
         self.features = base_model.features
         self.classifier = nn.Sequential(

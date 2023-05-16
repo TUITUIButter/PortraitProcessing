@@ -3,6 +3,7 @@ from modules.brightness import Brightness
 from modules.saturation import Saturation
 from modules.utils import Utils
 from SCUNet.scunet import Denoising
+from Neural_IMage_Assessment.NIMA import NIMA_predict
 import cv2
 
 path = "./imgs/middle-tilt.jpg"  # 倾斜的图片 angle: 25.91°
@@ -22,12 +23,14 @@ layout = Layout('./modules/graph_opt.pb')
 brightness = Brightness()
 saturation = Saturation()
 denoising = Denoising()
+NIMA_predict = NIMA_predict()
+
 
 
 layout_score = layout.cal_score(image)  # 布局得分
 brightness_score = brightness.cal_score(image)  # 亮度得分
 saturation_score = saturation.cal_score(image)  # 饱和度得分
-ai_score = float(Utils.eval_pic(path)[0][0])  # AI打分，获取第一个值并转成float类型
+ai_score = float(NIMA_predict.eval_pic_by_NIMA(path)[0][0])  # AI打分，获取第一个值并转成float类型
 total_score = layout_score + brightness_score + saturation_score
 
 print('total_score', total_score)

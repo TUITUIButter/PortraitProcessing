@@ -84,17 +84,15 @@ class Utils:
         gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         # 获取灰度图矩阵的行数和列数
         r, c = gray_img.shape[:2]
-        dark_sum = 0  # 偏暗的像素 初始化为0个
-        bright_sum = 0  # 偏暗的像素 初始化为0个
+
         piexs_sum = r * c  # 整个图的像素个数为r*c
 
-        # 遍历灰度图的所有像素
-        for row in gray_img:
-            for colum in row:
-                if colum < 60:  # 人为设置的超参数,表示0~60的灰度值为暗
-                    dark_sum += 1
-                elif colum > 220:
-                    bright_sum += 1
+        bright_sum_n = gray_img > 220
+        dark_sum_n = gray_img < 50
+
+        bright_sum = np.sum(bright_sum_n)
+        dark_sum = np.sum(dark_sum_n)
+
         dark_prop = dark_sum / piexs_sum
         bright_prop = bright_sum / piexs_sum
         print("dark_sum:" + str(dark_sum))
@@ -104,28 +102,27 @@ class Utils:
         print("bright_prop=bright_sum/piexs_sum:" + str(bright_prop))
         if dark_prop >= 0.6:  # 人为设置的超参数:表示若偏暗像素所占比例超过0.6,则这张图被认为整体环境黑暗的图片
             print("dark!")
-        elif bright_prop >= 0.3:
+        elif bright_prop >= 0.12:
             print("bright!")
         else:
             print("fine!")
-        cls.hist(gray_img)  # 若要查看图片的灰度值分布情况,可以这个注释解除
 
         return dark_prop, bright_prop
 
     # 用于显示图片的灰度直方图
-    @classmethod
-    def hist(cls, img):
-        # img = cv2.imread(pic_path, 0)
-        # img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        hist = cv2.calcHist([img], [0], None, [256], [0, 256])
-        plt.subplot(121)
-        plt.imshow(img, 'gray')
-        plt.xticks([])
-        plt.yticks([])
-        plt.title("Original")
-        plt.subplot(122)
-        plt.hist(img.ravel(), 256, [0, 256])
-        plt.show()
+    # @classmethod
+    # def hist(cls, img):
+    #     # img = cv2.imread(pic_path, 0)
+    #     # img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    #     hist = cv2.calcHist([img], [0], None, [256], [0, 256])
+    #     plt.subplot(121)
+    #     plt.imshow(img, 'gray')
+    #     plt.xticks([])
+    #     plt.yticks([])
+    #     plt.title("Original")
+    #     plt.subplot(122)
+    #     plt.hist(img.ravel(), 256, [0, 256])
+    #     plt.show()
 
 
 if __name__ == '__main__':

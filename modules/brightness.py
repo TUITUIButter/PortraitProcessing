@@ -8,15 +8,15 @@ import cv2
 class Brightness(BaseModule):
     def __init__(self):
         self.dark_prop, self.bright_prop = 0, 0
-        self.dark_threshold = 0.6
-        self.bright_threshold = 0.3
+        self.dark_threshold = 0.8
+        self.bright_threshold = 0.15
 
     def cal_score(self, img) -> float:
         self.dark_prop, self.bright_prop = Utils.brightness_detection(img)
         score = 10
         if self.dark_prop >= self.dark_threshold:  # 整体环境黑暗的图片
             score -= (self.dark_prop - self.dark_threshold) / (1 - self.dark_threshold) * 10.0
-        elif self.bright_prop >= 0.3:
+        elif self.bright_prop >= self.bright_threshold:
             score -= (self.bright_prop - self.bright_threshold) / (1 - self.bright_threshold) * 10.0
 
         print("brightness score: {:.2f}".format(score))

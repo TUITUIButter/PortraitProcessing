@@ -49,20 +49,20 @@ class Utils:
             # Add a point if it's confidence is higher than threshold.
             points.append((int(x), int(y)) if conf > 0.2 else None)
 
-        # 划线
-        for pair in cls.POSE_PAIRS:
-            part_from = pair[0]
-            part_to = pair[1]
-            assert (part_from in cls.BODY_PARTS)
-            assert (part_to in cls.BODY_PARTS)
-
-            id_from = cls.BODY_PARTS[part_from]
-            id_to = cls.BODY_PARTS[part_to]
-
-            if points[id_from] and points[id_to]:
-                cv2.line(img, points[id_from], points[id_to], (0, 255, 0), 3)
-                cv2.ellipse(img, points[id_from], (3, 3), 0, 0, 360, (0, 0, 255), cv2.FILLED)
-                cv2.ellipse(img, points[id_to], (3, 3), 0, 0, 360, (0, 0, 255), cv2.FILLED)
+        # # 划线
+        # for pair in cls.POSE_PAIRS:
+        #     part_from = pair[0]
+        #     part_to = pair[1]
+        #     assert (part_from in cls.BODY_PARTS)
+        #     assert (part_to in cls.BODY_PARTS)
+        #
+        #     id_from = cls.BODY_PARTS[part_from]
+        #     id_to = cls.BODY_PARTS[part_to]
+        #
+        #     if points[id_from] and points[id_to]:
+        #         cv2.line(img, points[id_from], points[id_to], (0, 255, 0), 3)
+        #         cv2.ellipse(img, points[id_from], (3, 3), 0, 0, 360, (0, 0, 255), cv2.FILLED)
+        #         cv2.ellipse(img, points[id_to], (3, 3), 0, 0, 360, (0, 0, 255), cv2.FILLED)
 
         # height, width = img.shape[:2]
         # # 设置窗口大小可调

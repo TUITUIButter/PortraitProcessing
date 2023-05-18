@@ -85,7 +85,7 @@ class Utils:
         # 获取灰度图矩阵的行数和列数
         r, c = gray_img.shape[:2]
 
-        piexs_sum = r * c  # 整个图的像素个数为r*c
+        piex_sum = r * c  # 整个图的像素个数为r*c
 
         bright_sum_n = gray_img > 220
         dark_sum_n = gray_img < 50
@@ -93,13 +93,13 @@ class Utils:
         bright_sum = np.sum(bright_sum_n)
         dark_sum = np.sum(dark_sum_n)
 
-        dark_prop = dark_sum / piexs_sum
-        bright_prop = bright_sum / piexs_sum
-        print("dark_sum:" + str(dark_sum))
-        print("bright_sum:" + str(bright_sum))
-        print("piexs_sum:" + str(piexs_sum))
-        print("dark_prop=dark_sum/piexs_sum:" + str(dark_prop))
-        print("bright_prop=bright_sum/piexs_sum:" + str(bright_prop))
+        dark_prop = dark_sum / piex_sum
+        bright_prop = bright_sum / piex_sum
+        print("dark_sum: {:.3f}".format(dark_sum))
+        print("bright_sum: {:.3f}".format(bright_sum))
+        print("piex_sum: {:.3f}".format(piex_sum))
+        print("dark_prop=dark_sum/piex_sum: {:.3f}".format(dark_prop))
+        print("bright_prop=bright_sum/piex_sum: {:.3f}".format(bright_prop))
         if dark_prop >= 0.6:  # 人为设置的超参数:表示若偏暗像素所占比例超过0.6,则这张图被认为整体环境黑暗的图片
             print("dark!")
         elif bright_prop >= 0.12:

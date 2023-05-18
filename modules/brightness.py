@@ -8,8 +8,8 @@ import cv2
 class Brightness(BaseModule):
     def __init__(self):
         self.dark_prop, self.bright_prop = 0, 0
-        self.dark_threshold = 0.8
-        self.bright_threshold = 0.15
+        self.dark_threshold = 0.35
+        self.bright_threshold = 0.1
 
     def cal_score(self, img) -> float:
         self.dark_prop, self.bright_prop = Utils.brightness_detection(img)
@@ -24,9 +24,9 @@ class Brightness(BaseModule):
 
     def opt_img(self, img) -> numpy.ndarray:
         if self.dark_prop >= self.dark_threshold:  # 整体环境黑暗的图片
-            gamma = self.dark_prop - self.dark_threshold + 1.2
-        elif self.bright_prop >= 0.3:
-            gamma = 0.9 - (self.bright_prop - self.bright_threshold)
+            gamma = self.dark_prop - self.dark_threshold + 1.4
+        elif self.bright_prop >= self.bright_threshold:
+            gamma = 0.8 - (self.bright_prop - self.bright_threshold)
         else:
             gamma = 1
         print("adjust gamma:" + str(gamma))

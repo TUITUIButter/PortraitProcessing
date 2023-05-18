@@ -87,7 +87,7 @@ class Utils:
 
         piex_sum = r * c  # 整个图的像素个数为r*c
 
-        bright_sum_n = gray_img > 220
+        bright_sum_n = gray_img > 200
         dark_sum_n = gray_img < 50
 
         bright_sum = np.sum(bright_sum_n)

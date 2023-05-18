@@ -180,6 +180,9 @@ class PortraitSeg:
         return out, predimg
 
 # if __name__ == '__main__':
-#     portraitSeg = PortraitSeg()
-#     a = portraitSeg.portraitSeg('../imgs/middle-tilt.jpg', None)
-#     print(a)
+    # portraitSeg = PortraitSeg()
+    # alphargb, human, background, human_blur_background = portraitSeg.portraitSeg('../imgs/04.jpg', None)
+    # cv2.imwrite('human.png', human)
+    # cv2.imwrite('human_blur_background.png', human_blur_background)
+    # cv2.imshow('human', human)
+    # cv2.waitKey(0)

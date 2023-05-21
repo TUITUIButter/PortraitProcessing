@@ -1,6 +1,6 @@
 import cv2
 import mediapipe as mp
-
+from SCUNet.scunet import Denoising
 import time  # 计算fps值
 
 # 两个初始化
@@ -11,18 +11,18 @@ mpDraw = mp.solutions.drawing_utils
 
 # path = "./imgs/middle-tilt.jpg"  # 倾斜的图片 angle: 25.91°
 # path = './imgs/test.png'  # angle: 5.57°
-# path = "./imgs/02dark.png"  # angle: 5.38°
+path = "./imgs/cloudy2.jpg"  # angle: 5.38°
 # path = "./imgs/cloudy.jpg"  # angle: 5.38°
 # path = "./imgs/good-001.JPG"  # 找不到LHip这个点
 # path = "./imgs/good-002.JPG"  # 背影无法定位
 # path = "./imgs/good-010.JPEG"  # angle: 10.78°
 # path = "imgs/bad-001.JPG"  # angle: 3.59°
-path = "imgs/03.jpg"  # angle: 3.59°
+# path = "imgs/good-010.jpeg"  # angle: 3.59°
 
 # 调用摄像头，在同级目录下新建Videos文件夹，然后在里面放一些MP4文件，方便读取
 img = cv2.imread(path)  # 倾斜的图片 angle: 25.91°
-gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-cv2.imshow("Gray", gray_img)
+# gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+# cv2.imshow("Gray", gray_img)
 
 # 转换为RGB格式，因为Pose类智能处理RGB格式，读取的图像格式是BGR格式
 imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
@@ -43,6 +43,10 @@ if results.pose_landmarks:
         # 使用cv2的circle函数将关键点特殊处理
         cv2.circle(img, (cx, cy), 5, (255, 0, 0), cv2.FILLED)
 
-# cv2.namedWindow('Original', cv2.WINDOW_KEEPRATIO)    # 窗口大小可以改变
+cv2.namedWindow('Original', cv2.WINDOW_KEEPRATIO)    # 窗口大小可以改变
 cv2.imshow("Original", img)
 cv2.waitKey(0)
+
+img = cv2.imread(path)  # 倾斜的图片 angle: 25.91°
+denoising = Denoising()
+denoising.run(img)  # 最后一步去噪，回保存到res.jpg

@@ -10,12 +10,13 @@ import time
 
 # path = "./imgs/middle-tilt.jpg"  # 倾斜的图片 angle: 25.91°
 # path = './imgs/test.png'  # angle: 5.57°
-path = "./imgs/02dark.png"  # angle: 5.38°
+# path = "./imgs/02.jpg"  # angle: 5.38°
 # path = "./imgs/cloudy.jpg"  # angle: 5.38°
 # path = "./imgs/good-001.JPG"  # 找不到LHip这个点
 # path = "./imgs/good-002.JPG"  # 背影无法定位
 # path = "./imgs/good-010.JPEG"  # angle: 10.78°
 # path = "imgs/bad-001.JPG"  # angle: 3.59°
+path = "imgs/09.jpg"
 
 image = cv2.imread(path)  # 倾斜的图片 angle: 25.91°
 assert image is not None
@@ -33,7 +34,8 @@ begin = time.perf_counter()
 layout_score = layout.cal_score(image)  # 布局得分
 brightness_score = brightness.cal_score(image)  # 亮度得分
 saturation_score = saturation.cal_score(image)  # 饱和度得分
-ai_score = float(NIMA_predict.eval_pic_by_NIMA(path)[0][0])  # AI打分，获取第一个值并转成float类型
+# ai_score = float(NIMA_predict.eval_pic_by_NIMA(path)[0][0])  # AI打分，获取第一个值并转成float类型
+ai_score = NIMA_predict.eval_pic_by_NIMA(path)
 total_score = layout_score + brightness_score + saturation_score
 end = time.perf_counter()
 print('cal_score time: {}s'.format(end-begin))

@@ -45,3 +45,5 @@ class Denoising:
         # save results
         # ------------------------------------
         util.imsave(img_E, 'res.jpg')
+
+        return img_E
